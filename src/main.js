@@ -82,8 +82,14 @@ ext.runtime.onExtensionClick.addListener(async () => {
   foundIndex = -1;
 });
 
-ext.tabs.onClicked.addListener(async () => {
-  console.log("Tab is clicked");
+// Event listener for tab click. It restores and focuses the clicked tab.
+ext.tabs.onClicked.addListener(async (event) => {
+  createdTl.forEach(async (props) => {
+    if (props.tabObject.id == event.id) {
+      await ext.windows.restore(props.windowObject.id);
+      await ext.windows.focus(props.windowObject.id);
+    }
+  });
 });
 
 ext.tabs.onClickedClose.addListener(async () => {
