@@ -34,6 +34,14 @@ ext.runtime.onExtensionClick.addListener(async () => {
     mutable: false,
     closable: true,
     });
+   // Create a new websession and assign it to myWebsession variable
+  myWebsession = await ext.websessions.create({
+    partition: `TLDraw `,
+    persistent: true,
+    cache: true,
+    global: false,
+  });
+  
 });
 
 ext.tabs.onClicked.addListener(async () => {
