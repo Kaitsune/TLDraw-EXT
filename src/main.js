@@ -59,6 +59,11 @@ ext.runtime.onExtensionClick.addListener(async () => {
     websession: myWebsession,
   });
 
+  // Detect the initial dark or light value and dispatch an event accordingly
+  let mode = (await ext.windows.getPlatformDarkMode()) ? "setDarkMode" : "setLightMode";
+
+  await ext.webviews.executeJavaScript(myWebview.id, `window.dispatchEvent(new Event('${mode}'))`);
+
   // Load URL in the webview and attach it to the window
   await ext.webviews.loadURL(myWebview.id, "https://www.tldraw.com");
 
@@ -80,6 +85,14 @@ ext.runtime.onExtensionClick.addListener(async () => {
     createdTl.push({ tabObject: myTab, windowObject: myWindows, webviewObject: myWebview, isCreated: true });
   }
   foundIndex = -1;
+});
+
+// Event listener for dark mode update. It updates all tabs with new mode.
+ext.windows.onUpdatedDarkMode.addListener(async (event, detail) => {
+  const mode = detail.platform ? "setDarkMode" : "setLightMode";
+  for (let props of createdTl) {
+    await ext.webviews.executeJavaScript(props.webviewObject.id, `window.dispatchEvent(new Event('${mode}'))`);
+  }
 });
 
 // Event listener for tab click. It restores and focuses the clicked tab.
