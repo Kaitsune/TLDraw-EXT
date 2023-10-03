@@ -59,6 +59,11 @@ ext.runtime.onExtensionClick.addListener(async () => {
     websession: myWebsession,
   });
 
+  // Detect the initial dark or light value and dispatch an event accordingly
+  let mode = (await ext.windows.getPlatformDarkMode()) ? "setDarkMode" : "setLightMode";
+
+  await ext.webviews.executeJavaScript(myWebview.id, `window.dispatchEvent(new Event('${mode}'))`);
+
   // Load URL in the webview and attach it to the window
   await ext.webviews.loadURL(myWebview.id, "https://www.tldraw.com");
 
