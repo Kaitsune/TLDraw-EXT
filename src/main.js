@@ -87,6 +87,14 @@ ext.runtime.onExtensionClick.addListener(async () => {
   foundIndex = -1;
 });
 
+// Event listener for dark mode update. It updates all tabs with new mode.
+ext.windows.onUpdatedDarkMode.addListener(async (event, detail) => {
+  const mode = detail.platform ? "setDarkMode" : "setLightMode";
+  for (let props of createdTl) {
+    await ext.webviews.executeJavaScript(props.webviewObject.id, `window.dispatchEvent(new Event('${mode}'))`);
+  }
+});
+
 // Event listener for tab click. It restores and focuses the clicked tab.
 ext.tabs.onClicked.addListener(async (event) => {
   createdTl.forEach(async (props) => {
