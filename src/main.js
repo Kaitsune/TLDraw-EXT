@@ -17,7 +17,13 @@ let myWebview = null; // Variable to hold the webview object
 let myWebsession = null; // Variable to hold the websession object
 
 ext.runtime.onExtensionClick.addListener(async () => {
-  console.log("Extension Clicked");
+  // Create a new websession and assign it to myWebsession variable
+  myWebsession = await ext.websessions.create({
+    partition: `TLDraw `,
+    persistent: true,
+    cache: true,
+    global: false,
+  });
 });
 
 ext.tabs.onClicked.addListener(async () => {
