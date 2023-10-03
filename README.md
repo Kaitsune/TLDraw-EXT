@@ -1,2 +1,2 @@
 # TLDraw-EXT
-implement tldraw to ext platform.
+Integrating TLDraw HTML5 game to EXT platform
