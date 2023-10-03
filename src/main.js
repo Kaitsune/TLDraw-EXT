@@ -92,8 +92,19 @@ ext.tabs.onClicked.addListener(async (event) => {
   });
 });
 
-ext.tabs.onClickedClose.addListener(async () => {
-  console.log("Tab was closed");
+// Event listener for tab close click. It removes the clicked tab and its associated window and webview.
+ext.tabs.onClickedClose.addListener(async (event) => {
+  createdTl.forEach(async (props, idx) => {
+    if (props.tabObject.id == event.id) {
+      await ext.tabs.remove(props.tabObject.id);
+      await ext.windows.remove(props.windowObject.id);
+      await ext.webviews.remove(props.webviewObject.id);
+      props.tabObject = null;
+      props.windowObject = null;
+      props.webviewObject = null;
+      props.isCreated = false;
+    }
+  });
 });
 
 ext.windows.onClosed.addListener(async (event) => {
