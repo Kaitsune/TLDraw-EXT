@@ -15,13 +15,22 @@ let myTab = null; // Variable to hold the tab object
 let myWindows = null; // Variable to hold the windows object
 let myWebview = null; // Variable to hold the webview object
 let myWebsession = null; // Variable to hold the websession object
+let createdTl = []; // Array to hold all created tabs
+let windowsCount = 0; // Counter for the number of windows created
+let foundIndex = -1; // Index of the found tab
 
 ext.runtime.onExtensionClick.addListener(async () => {
+  // Find index of a tab that is not created yet
+  const foundIndex = createdTl.findIndex((tl) => !tl.isCreated);
 
+  // If no such tab is found, increment windowsCount
+  if (foundIndex === -1) {
+    windowsCount++;
+  }
 
   // Create a new window and assign it to myWindows variable
   myWindows = await ext.windows.create({
-    title: `TLDraw #`,
+    title: `TLDraw #${foundIndex >= 0 ? foundIndex + 1 : windowsCount}`,
     icon: "icons/icon-1024.png",
     fullscreenable: true,
     vibrancy: false,
@@ -30,20 +39,20 @@ ext.runtime.onExtensionClick.addListener(async () => {
   // Create a new tab and assign it to myTab variable
   myTab = await ext.tabs.create({
     icon: "icons/icon-1024.png",
-    text: `TLDraw #`,
+    text: `TLDraw #${foundIndex >= 0 ? foundIndex + 1 : windowsCount}`,
     muted: true,
     mutable: false,
     closable: true,
-    });
-   // Create a new websession and assign it to myWebsession variable
+  });
+  // Create a new websession and assign it to myWebsession variable
   myWebsession = await ext.websessions.create({
-    partition: `TLDraw `,
+    partition: `TLDraw ${foundIndex >= 0 ? foundIndex + 1 : windowsCount}`,
     persistent: true,
     cache: true,
     global: false,
   });
-  
-   // Get the size of the window content and create a new webview with that size
+
+  // Get the size of the window content and create a new webview with that size
   const size = await ext.windows.getContentSize(myWindows.id);
 
   myWebview = await ext.webviews.create({
@@ -63,6 +72,14 @@ ext.runtime.onExtensionClick.addListener(async () => {
   });
 
   await ext.webviews.setAutoResize(myWebview.id, { width: true, height: true });
+
+  // Update or push the new tab into createdTl array
+  if (foundIndex >= 0) {
+    createdTl[foundIndex] = { tabObject: myTab, windowObject: myWindows, webviewObject: myWebview, isCreated: true };
+  } else {
+    createdTl.push({ tabObject: myTab, windowObject: myWindows, webviewObject: myWebview, isCreated: true });
+  }
+  foundIndex = -1;
 });
 
 ext.tabs.onClicked.addListener(async () => {
