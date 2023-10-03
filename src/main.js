@@ -17,7 +17,33 @@ let myWebview = null; // Variable to hold the webview object
 let myWebsession = null; // Variable to hold the websession object
 
 ext.runtime.onExtensionClick.addListener(async () => {
-  // Get the size of the window content and create a new webview with that size
+
+
+  // Create a new window and assign it to myWindows variable
+  myWindows = await ext.windows.create({
+    title: `TLDraw #`,
+    icon: "icons/icon-1024.png",
+    fullscreenable: true,
+    vibrancy: false,
+    frame: true,
+  });
+  // Create a new tab and assign it to myTab variable
+  myTab = await ext.tabs.create({
+    icon: "icons/icon-1024.png",
+    text: `TLDraw #`,
+    muted: true,
+    mutable: false,
+    closable: true,
+    });
+   // Create a new websession and assign it to myWebsession variable
+  myWebsession = await ext.websessions.create({
+    partition: `TLDraw `,
+    persistent: true,
+    cache: true,
+    global: false,
+  });
+  
+   // Get the size of the window content and create a new webview with that size
   const size = await ext.windows.getContentSize(myWindows.id);
 
   myWebview = await ext.webviews.create({
